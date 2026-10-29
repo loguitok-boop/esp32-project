@@ -18,12 +18,12 @@
 static const char *TAG = "lvgl_port";
 static SemaphoreHandle_t lvgl_mux = NULL;
 
-static uint16_t *lvgl_dma_buf = NULL; 
-static SemaphoreHandle_t lvgl_flush_semap;
-
-#if (Rotated == USER_DISP_ROT_90)
-uint16_t* rotat_ptr = NULL;
-#endif
+// Two small internal-RAM DMA buffers used ping-pong: while chunk N is being
+// clocked out over QSPI, the CPU prepares (rotates/copies) chunk N+1.
+#define LVGL_DMA_BUF_COUNT 2
+#define FLUSH_CHUNK_ROWS   64   // native panel rows per chunk (LVGL_DMA_BUFF_LEN = 172*64*2)
+static uint16_t *lvgl_dma_buf[LVGL_DMA_BUF_COUNT] = {NULL, NULL};
+static SemaphoreHandle_t lvgl_flush_semap;      // counting: number of free DMA buffers
 
 static const axs15231b_lcd_init_cmd_t lcd_init_cmds[] = 
 {
@@ -33,10 +33,31 @@ static const axs15231b_lcd_init_cmd_t lcd_init_cmds[] =
 
 static bool example_notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
-  BaseType_t TaskWoken;
+  BaseType_t TaskWoken = pdFALSE;
   xSemaphoreGiveFromISR(lvgl_flush_semap,&TaskWoken);
-  return false;
+  return TaskWoken == pdTRUE;
 }
+
+#if (Rotated == USER_DISP_ROT_90)
+// Rotate one 64-row chunk of the panel straight from the LVGL frame (640x172,
+// row-major, PSRAM) into a DMA buffer (172 px per native row).
+// Native (col i, row j) <- LVGL (x = j, y = V_RES-1-i).
+// Loop order: read PSRAM sequentially (cache/burst friendly), scatter-write the
+// small internal-RAM destination (cheap, no cache penalty).
+static void IRAM_ATTR rotate_chunk(const uint16_t *src, uint16_t *dst, int chunk)
+{
+  const int j0 = chunk * FLUSH_CHUNK_ROWS;
+  for (int i = 0; i < EXAMPLE_LCD_V_RES; i++)
+  {
+    const uint16_t *s = src + (EXAMPLE_LCD_V_RES - 1 - i) * EXAMPLE_LCD_H_RES + j0;
+    uint16_t *d = dst + i;
+    for (int jj = 0; jj < FLUSH_CHUNK_ROWS; jj++)
+    {
+      d[jj * LCD_NOROT_HRES] = s[jj];
+    }
+  }
+}
+#endif
 
 static void example_increase_lvgl_tick(void *arg)
 {
@@ -45,43 +66,31 @@ static void example_increase_lvgl_tick(void *arg)
 
 static void example_lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
 {
-#if (Rotated == USER_DISP_ROT_90)
-  uint32_t index = 0;
-  uint16_t *data_ptr = (uint16_t *)color_map;
-  for (uint16_t j = 0; j < EXAMPLE_LCD_H_RES; j++)
-  {
-    for (uint16_t i = 0; i < EXAMPLE_LCD_V_RES; i++)
-    {
-      rotat_ptr[index++] = data_ptr[EXAMPLE_LCD_H_RES * (EXAMPLE_LCD_V_RES - i - 1) + j];             
-    }
-  }
-#endif
   esp_lcd_panel_handle_t panel_handle = (esp_lcd_panel_handle_t) drv->user_data;
-  const int flush_coun = (LVGL_SPIRAM_BUFF_LEN / LVGL_DMA_BUFF_LEN);
-  const int offgap = (LCD_NOROT_VRES / flush_coun);
-  const int dmalen = (LVGL_DMA_BUFF_LEN / 2);
-  int offsetx1 = 0;
-  int offsety1 = 0;
-  int offsetx2 = LCD_NOROT_HRES;
-  int offsety2 = offgap;
+  const int flush_coun = (LVGL_SPIRAM_BUFF_LEN / LVGL_DMA_BUFF_LEN);   // 10 chunks
+  const int offgap = (LCD_NOROT_VRES / flush_coun);                    // 64 native rows
+  const int dmalen = (LVGL_DMA_BUFF_LEN / 2);                          // pixels per chunk
+  const uint16_t *src = (const uint16_t *)color_map;
 
-#if (Rotated == USER_DISP_ROT_90)
-  uint16_t *map = (uint16_t *)rotat_ptr;
-#else
-  uint16_t *map = (uint16_t *)color_map;
-#endif
-
-  xSemaphoreGive(lvgl_flush_semap);
-  for(int i = 0; i<flush_coun; i++)
+  for (int c = 0; c < flush_coun; c++)
   {
-    xSemaphoreTake(lvgl_flush_semap,portMAX_DELAY);
-    memcpy(lvgl_dma_buf,map,LVGL_DMA_BUFF_LEN);
-    esp_lcd_panel_draw_bitmap(panel_handle, offsetx1, offsety1, offsetx2, offsety2, lvgl_dma_buf);
-    offsety1 += offgap;
-    offsety2 += offgap;
-    map += dmalen;
+    // Wait for a free DMA buffer (completions arrive in order, so buffer
+    // c % 2 is guaranteed free once the transfer of chunk c-2 is done).
+    xSemaphoreTake(lvgl_flush_semap, portMAX_DELAY);
+    uint16_t *dma = lvgl_dma_buf[c % LVGL_DMA_BUF_COUNT];
+#if (Rotated == USER_DISP_ROT_90)
+    rotate_chunk(src, dma, c);
+#else
+    memcpy(dma, src + (size_t)c * dmalen, LVGL_DMA_BUFF_LEN);
+#endif
+    esp_lcd_panel_draw_bitmap(panel_handle, 0, c * offgap, LCD_NOROT_HRES, (c + 1) * offgap, dma);
   }
-  xSemaphoreTake(lvgl_flush_semap,portMAX_DELAY);
+
+  // Drain: wait until every buffer is free again (= all transfers finished),
+  // then hand the semaphore tokens back for the next frame.
+  for (int b = 0; b < LVGL_DMA_BUF_COUNT; b++) xSemaphoreTake(lvgl_flush_semap, portMAX_DELAY);
+  for (int b = 0; b < LVGL_DMA_BUF_COUNT; b++) xSemaphoreGive(lvgl_flush_semap);
+
   lv_disp_flush_ready(drv);
 }
 
@@ -159,11 +168,9 @@ void example_lvgl_port_task(void *arg)
 
 void lvgl_port_init(void)
 {
-#if (Rotated == USER_DISP_ROT_90)
-  rotat_ptr = (uint16_t*)heap_caps_malloc(EXAMPLE_LCD_H_RES * EXAMPLE_LCD_V_RES * sizeof(uint16_t), MALLOC_CAP_SPIRAM);
-  assert(rotat_ptr);
-#endif
-  lvgl_flush_semap = xSemaphoreCreateBinary();
+  // Counting semaphore: one token per free DMA buffer (both free at start).
+  lvgl_flush_semap = xSemaphoreCreateCounting(LVGL_DMA_BUF_COUNT, LVGL_DMA_BUF_COUNT);
+  assert(lvgl_flush_semap);
 
   static lv_disp_draw_buf_t disp_buf; // contains internal graphic buffer(s) called draw buffer(s)
   static lv_disp_drv_t disp_drv;      // contains callback functions
@@ -228,8 +235,11 @@ void lvgl_port_init(void)
 
   lv_init();
 
-  lvgl_dma_buf = (uint16_t *)heap_caps_malloc(LVGL_DMA_BUFF_LEN , MALLOC_CAP_DMA);
-  assert(lvgl_dma_buf);
+  for (int b = 0; b < LVGL_DMA_BUF_COUNT; b++)
+  {
+    lvgl_dma_buf[b] = (uint16_t *)heap_caps_malloc(LVGL_DMA_BUFF_LEN, MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL);
+    assert(lvgl_dma_buf[b]);
+  }
   lv_color_t *buffer_1 = (lv_color_t *)heap_caps_malloc(LVGL_SPIRAM_BUFF_LEN , MALLOC_CAP_SPIRAM);
   lv_color_t *buffer_2 = (lv_color_t *)heap_caps_malloc(LVGL_SPIRAM_BUFF_LEN , MALLOC_CAP_SPIRAM);
   assert(buffer_1);

@@ -285,12 +285,32 @@ static void refreshUi() {
     snprintf(buf, sizeof(buf), "SCANNING ch%d   APs %d   deauth/s %lu",
              shownCh, count, (unsigned long)g_deauthRate);
   }
-  lv_label_set_text(ui_head, buf);
-  lv_obj_set_style_text_color(ui_head, g_deauthRate >= 5 ? COL_RED : COL_TEXT, 0);
+  // The panel needs a full-frame flush for ANY invalidation, so only touch a
+  // label when its text/colour really changed.
+  static char prevHead[96] = {0};
+  static bool prevHeadRed = false;
+  if (strcmp(prevHead, buf) != 0) {
+    lv_label_set_text(ui_head, buf);
+    strncpy(prevHead, buf, sizeof(prevHead) - 1);
+  }
+  bool headRed = g_deauthRate >= 5;
+  if (headRed != prevHeadRed) {
+    lv_obj_set_style_text_color(ui_head, headRed ? COL_RED : COL_TEXT, 0);
+    prevHeadRed = headRed;
+  }
 
+  static char prevBatt[32] = {0};
+  static bool prevBattRed = false;
   snprintf(buf, sizeof(buf), "%d%%  %.2fV", g_battPct, g_battVolts);
-  lv_label_set_text(ui_batt, buf);
-  lv_obj_set_style_text_color(ui_batt, g_battPct <= 15 ? COL_RED : COL_MUTED, 0);
+  if (strcmp(prevBatt, buf) != 0) {
+    lv_label_set_text(ui_batt, buf);
+    strncpy(prevBatt, buf, sizeof(prevBatt) - 1);
+  }
+  bool battRed = g_battPct <= 15;
+  if (battRed != prevBattRed) {
+    lv_obj_set_style_text_color(ui_batt, battRed ? COL_RED : COL_MUTED, 0);
+    prevBattRed = battRed;
+  }
 
   lvgl_port_unlock();
 }
