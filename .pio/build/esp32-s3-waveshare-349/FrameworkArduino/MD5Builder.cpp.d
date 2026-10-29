@@ -1,0 +1,20 @@
+.pio/build/esp32-s3-waveshare-349/FrameworkArduino/MD5Builder.cpp.o: \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/MD5Builder.cpp \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/HEXBuilder.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/WString.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/pgmspace.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/newlib/platform_include/ctype.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/Stream.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/Print.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/newlib/platform_include/stdio.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/WString.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/Printable.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/MD5Builder.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_system/include/esp_system.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_err.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_compiler.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_attr.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_bit_defs.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_idf_version.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_rom/include/esp_rom_md5.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/HashBuilder.h

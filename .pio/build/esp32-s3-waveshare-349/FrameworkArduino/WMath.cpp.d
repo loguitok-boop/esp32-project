@@ -1,0 +1,33 @@
+.pio/build/esp32-s3-waveshare-349/FrameworkArduino/WMath.cpp.o: \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/WMath.cpp \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_system/include/esp_system.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_err.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/newlib/platform_include/stdio.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_compiler.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_attr.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_bit_defs.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_idf_version.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-log.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_timer/include/esp_timer.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_hw_support/include/esp_etm.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_rom/esp32s3/include/esp32s3/rom/ets_sys.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/soc/esp32s3/include/soc/soc.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_assert.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/soc/esp32s3/register/soc/reg_base.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/log/include/esp_log.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_rom/include/esp_rom_sys.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/soc/esp32s3/include/soc/reset_reasons.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/soc/esp32s3/include/soc/soc_caps.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/log/include/esp_log_config.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/log/include/esp_log_level.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/log/include/esp_log_color.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/log/include/esp_log_buffer.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/log/include/esp_log_timestamp.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/log/include/esp_log_write.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/log/include/esp_log_format.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/log/include/esp_log_args.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_macros.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_assert.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/log/include/esp_log_attr.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/log/include/esp_private/log_attr.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_hw_support/include/esp_random.h

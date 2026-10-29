@@ -1,0 +1,21 @@
+.pio/build/esp32-s3-waveshare-349/src/lcd_bl_bsp/lcd_bl_pwm_bsp.c.o: \
+ src/lcd_bl_bsp/lcd_bl_pwm_bsp.c \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/newlib/platform_include/stdio.h \
+ src/lcd_bl_bsp/lcd_bl_pwm_bsp.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_err.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_compiler.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_driver_ledc/include/driver/ledc.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_hw_support/include/esp_intr_alloc.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_hw_support/include/esp_intr_types.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/hal/include/hal/ledc_types.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/soc/esp32s3/include/soc/soc_caps.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/soc/esp32s3/include/soc/clk_tree_defs.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_driver_gpio/include/driver/gpio.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/hal/include/hal/gpio_types.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/soc/esp32s3/include/soc/gpio_num.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_common/include/esp_bit_defs.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_rom/include/esp_rom_gpio.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/soc/esp32s3/include/soc/gpio_pins.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_driver_gpio/include/driver/gpio_etm.h \
+ /Users/lolkito/.platformio/packages/framework-arduinoespressif32-libs/esp32s3/include/esp_hw_support/include/esp_etm.h \
+ src/user_config.h
